@@ -1,1 +1,1 @@
-c:\development\jsexe\jsexe.exe -cb  source.js release.html
+c:\development\jsexe\jsexe.exe -cb source.js release\index.html
