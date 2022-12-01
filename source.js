@@ -1,51 +1,20 @@
-w = 1920;
-h = 1080;
-V.style = "display:none;";
-let soundBuffer;
-const c3d = document.createElement("canvas");
+w = 640;
+h = 360;
+let c3d = document.createElement("canvas");
 c3d.width = w;
 c3d.height = h;
 document.body.appendChild(c3d);
-let program, buffer, timeUniform, resolutionUniform, positionAttribute;
+let program, buffer, timeUniform, positionAttribute;
 
-const gl = c3d.getContext("webgl", { antialias: false, depth: false, stencil: false, premultipliedAlpha: false, preserveDrawingBuffer: true });
-const vertexShader = `
-attribute vec3 position;
-void main() {
-    gl_Position = vec4(position, 1.0);
-}
-`;
+const gl = c3d.getContext("webgl");
+const vertexShader = `attribute vec3 position;void main(){gl_Position = vec4(position, 1.0);}`;
 const fragmentShader = `
-precision highp float;
-
-uniform float time;
-uniform vec2 resolution;
-
-void main( void ) {
-	vec2 position = ( gl_FragCoord.xy / resolution.xy);
-	float color = 0.0;
-	color += sin( position.x * cos( time / 15.0 ) * 80.0 ) + cos( position.y * cos( time / 15.0 ) * 10.0 );
-	color += sin( position.y * sin( time / 10.0 ) * 40.0 ) + cos( position.x * sin( time / 25.0 ) * 40.0 );
-	color += sin( position.x * sin( time / 5.0 ) * 10.0 ) + sin( position.y * sin( time / 35.0 ) * 80.0 );
-	color *= sin( time / 10.0 ) * 0.5;
-
-	gl_FragColor = vec4( vec3( color, color * 0.5, sin( color + time / 3.0 ) * 0.75 ), 1.0 );
-}
 `;
-
 function createShader(src, type) {
-
     var shader = gl.createShader(type);
     gl.shaderSource(shader, src);
     gl.compileShader(shader);
-    let t =  gl.getShaderInfoLog(shader);
-    if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        var error = gl.getShaderInfoLog(shader);
-        console.log(error);
-        return null;
-    }
     return shader;
-
 }
 
 function draw(time) {
@@ -57,16 +26,16 @@ function draw(time) {
     gl.enableVertexAttribArray(positionAttribute);
     gl.useProgram(program);
     gl.uniform1f(timeUniform, time / 1000 );
-    gl.uniform2f(resolutionUniform, w, h);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     gl.useProgram(null);
     window.requestAnimationFrame(draw);
 };
 
-c3d.onclick = () => {
+V.onclick = () => {
     const audioContext = new window.AudioContext();
-    soundBuffer = audioContext.createBuffer(1, 22050 * 60, 44000);
+    const soundBuffer = audioContext.createBuffer(1, 22050 * 60, 44000);
     const nowBuffering = soundBuffer.getChannelData(0);
+    //is there way to create array like in linq? (generator?)
     for (let i = 0; i < soundBuffer.length; i++) {
         const t = i;
         //This tune is ripped from https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.htm
@@ -100,16 +69,7 @@ c3d.onclick = () => {
     gl.attachShader(program, fs);
 
     gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-        console.error( 'VALIDATE_STATUS: ' + gl.getProgramParameter(program, gl.VALIDATE_STATUS), 'ERROR: ' + gl.getError() );
-        return null;
-    }
- 
     timeUniform = gl.getUniformLocation(program, "time");
-    resolutionUniform = gl.getUniformLocation(program, "resolution");
     positionAttribute = gl.getAttribLocation(program, "position");
-
-    //If we need delay before start
-    //this can be used
-    setTimeout(() => {window.requestAnimationFrame(draw);}, 0);
+    window.requestAnimationFrame(draw);
 };
