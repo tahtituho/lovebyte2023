@@ -139,13 +139,6 @@ hit raymarch(vec3 rayOrigin, vec3 rayDirection) {
     return h;
 }
 
-vec3 calculateOmniLight(en en) {
-    vec3 ambient = en.mt1.rgb * en.mt1.a * 10.0;
-    float diff = max(dot(en.n, normalize(vec3(0.0, 10.0, 0.0) - en.po)), 0.0);
-    vec3 diffuse = diff * en.mt2.rgb * en.mt2.a * 10.0;
-    return (ambient + diffuse);
-}
-
 void main() {
     vec2 resolution = vec2(1280, 720);
     float aspectRatio = resolution.x / resolution.y;
@@ -157,6 +150,9 @@ void main() {
 
     vec3 rayDirection = normalize(forward + 0.75 * uv.x * right + 0.75 * uv.y * normalize(cross(forward, right)));
     hit h = raymarch(cp, rayDirection);
-    vec3 result = vec3((1.0 - smoothstep(0.0, 300.0, h.d))) * calculateOmniLight(h.en);
+    vec3 ambient = h.en.mt1.rgb * h.en.mt1.a * 10.0;
+    float diff = max(dot(h.en.n, normalize(vec3(0.0, 10.0, 0.0) - h.en.po)), 0.0);
+    vec3 diffuse = diff * h.en.mt2.rgb * h.en.mt2.a * 10.0;
+    vec3 result = vec3((1.0 - smoothstep(0.0, 300.0, h.d))) * (ambient + diffuse);
     gl_FragColor = vec4(result, 1.0); 
 }
