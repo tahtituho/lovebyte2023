@@ -68,22 +68,10 @@ v3t repeat(vec3 p, vec3 size) {
 en mBox(vec3 path, vec3 size, vec4 mt1, vec4 mt2) {
     en m;
     vec3 d = abs(path) - size;
-    m.d = (min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0)) - 0.15);
-    m.po = path;
+    m.d = (min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0)) - 0.3);
     m.mt1 = mt1;
     m.mt2 = mt2;
     return m;
-}
-
-en mTorus(vec3 path, vec2 size, vec4 mt1, vec4 mt2) {
-    return en
-    (
-        (length(vec2(length(path.xz) - size.x, path.y)) - size.y),
-        path,
-        vec3(0),
-        mt1,
-        mt2
-    );
 }
 
 en scene(vec3 path) {    
@@ -94,24 +82,18 @@ en scene(vec3 path) {
         rot(translate(boxR.fr, vec3(0.0, (sin(time) * 10.0) + d * 10.0, 0.0)), vec3((sin(time) * 4.0) * d)),
         vec3(1.0),
         vec4(0.01, 0.0, 0.17, 0.25),
-        vec4(0.25, 0.73, 0.77, 0.05)
+        vec4(0.95, 0.73, 0.77, 0.05)
     );
-    
-    vec3 tTor = rot(path, vec3(-time));
-    vec3 tp = vec3(8.0, 0.0, 0.0);
-    en torus1 = mTorus(
-        translate(tTor, tp), 
-        vec2(16.0, 5.0),
-        vec4(0.55, 0.07, 0.59, 0.1),
-        vec4(1.0, 0.99, 0.0, 0.1)
+
+    boxR = repeat(rot(path, vec3(0.0, -time / 2, 0.0)), vec3(80.0, 0.0, 80.0));
+    en buildings = mBox(
+        boxR.fr,
+        vec3(10.0, 190.0, 10.0),
+        vec4(abs(boxR.sd.xzx) * 3.0, 0.01),
+        vec4(0.55, 0.55, 0.55, 0.5)
     );
-    en torus2 = mTorus(
-        translate(rot(tTor, vec3(1.57, 0.0, 0.0)), -tp), 
-        vec2(16.0, 5.0),
-        vec4(0.55, 0.07, 0.59, 0.1),
-        vec4(1.0, 0.99, 0.0, 0.1)
-    );
-    return opSmoothUnion(boxes, opSmoothUnion(torus1, torus2, 0.0, 0.0), 1.5, 0.0);;
+    buildings.d += sin((boxR.fr.y * 0.25 + (time * ((-boxR.sd) * 2.0)))) * 0.5;
+    return opSmoothUnion(boxes, buildings, 1.5, 0.0);
 } 
 
 vec3 calculatePointNormals(vec3 point) {
@@ -151,7 +133,7 @@ void main() {
     vec3 rayDirection = normalize(forward + 0.75 * uv.x * right + 0.75 * uv.y * normalize(cross(forward, right)));
     hit h = raymarch(cp, rayDirection);
     vec3 ambient = h.en.mt1.rgb * h.en.mt1.a * 10.0;
-    float diff = max(dot(h.en.n, normalize(vec3(0.0, 10.0, 0.0) - h.en.po)), 0.0);
+    float diff = max(dot(h.en.n, normalize(vec3(0.0, 100.0, 10.0) - h.en.po)), 0.0);
     vec3 diffuse = diff * h.en.mt2.rgb * h.en.mt2.a * 10.0;
     vec3 result = vec3((1.0 - smoothstep(0.0, 300.0, h.d))) * (ambient + diffuse);
     gl_FragColor = vec4(result, 1.0); 
