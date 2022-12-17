@@ -12,8 +12,8 @@ struct en {
     float d;
     vec3 po;
     vec3 n;
-    vec4 mt1;
-    vec4 mt2;
+    vec4 m1;
+    vec4 m2;
 };
 
 struct hit {
@@ -58,20 +58,16 @@ vec3 rot(vec3 zp, vec3 a) {
     );
 }
 
-vec3 translate(vec3 p, vec3 p1) {
-    return p + (p1 * -1.0);
-}
-
 v3t repeat(vec3 p, vec3 size) {
     return v3t(mod(p + size * 0.5, size) - size * 0.5, floor((p + size * 0.5) / size));
 }
 
-en mBox(vec3 path, vec3 size, vec4 mt1, vec4 mt2) {
+en mBox(vec3 path, vec3 size, vec4 m1, vec4 m2) {
     en m;
     vec3 d = abs(path) - size;
     m.d = (min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0)) - 0.3);
-    m.mt1 = mt1;
-    m.mt2 = mt2;
+    m.m1 = m1;
+    m.m2 = m2;
     return m;
 }
 
@@ -82,18 +78,18 @@ en scene(vec3 path) {
     
     float d = sin((boxR.sd.x + time2) / 10.0) * cos((boxR.sd.z + time2) / 5.0);
     en boxes = mBox(
-        rot(translate(boxR.fr, vec3(0.0, (sin(time) * 10.0) + d * 10.0 + 25.0, 0.0)), vec3((sin(time) * 4.0) * d)),
+        rot(boxR.fr + (vec3(0.0, (sin(time) * 10.0) + d * 10.0 + 25.0, 0.0) * -1.0), vec3((sin(time) * 4.0) * d)),
         vec3(1.0),
         vec4(0.01, 0.0, 0.17, 0.25),
         vec4(0.95, 0.73, 0.77, 0.05)
     );
 
-    boxR = repeat(rot(path, vec3(time3, time, -time)), vec3(75.0, 75.0, 75.0));
+    boxR = repeat(rot(path, vec3(time3, time, -time)), vec3(75.0));
     en buildings = mBox(
         rot(boxR.fr, vec3(boxR.sd) + time) + length(sin((uv.xy + time) * 13.0)),
-        vec3(10.0, 10.0, 10.0),
+        vec3(10.0),
         vec4(abs(boxR.sd.xyz), 0.05),
-        vec4(1.0, 1.0, 1.0, 0.05)
+        vec4(vec3(1.0), 0.05)
     );
     return opSmoothUnion(boxes, buildings, 10.0, 0.0);
 } 
@@ -108,10 +104,10 @@ vec3 calculatePointNormals(vec3 point) {
     );
 }
 
-hit raymarch(vec3 rayOrigin, vec3 rayDirection) {
+hit raymarch(vec3 rayDirection) {
     hit h;
     for(int i = 0; i <= 64; i++) {
-        vec3 point = rayOrigin + rayDirection * h.d;
+        vec3 point = vec3(0.0, 30.0, 50.0) + rayDirection * h.d;
         h.en = scene(point);
         h.d += h.en.d;
 
@@ -125,17 +121,12 @@ hit raymarch(vec3 rayOrigin, vec3 rayDirection) {
 
 void main() {
     vec2 resolution = vec2(1280, 720);
-    float aspectRatio = resolution.x / resolution.y;
     uv = (gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0;
-    uv.x *= aspectRatio;
-    vec3 cp = vec3(0.0, 30.0, 50.0);
-    vec3 forward = normalize(-cp);   
-    vec3 right = normalize(vec3(forward.z, 0.0, -forward.x));
-
-    hit h = raymarch(cp, normalize(forward + 0.75 * uv.x * right + 0.75 * uv.y * normalize(cross(forward, right))));
-    vec3 ambient = h.en.mt1.rgb * h.en.mt1.a * 10.0;
+    uv.x *= resolution.x / resolution.y;
+    hit h = raymarch(normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + 0.75 * uv.y * vec3(0.0, 0.8575, -0.5145)));
+    vec3 ambient = h.en.m1.rgb * h.en.m1.a * 10.0;
     float diff = max(dot(h.en.n, normalize(vec3(0.0, 100.0, 10.0) - h.en.po)), 0.0);
-    vec3 diffuse = diff * h.en.mt2.rgb * h.en.mt2.a * 10.0;
+    vec3 diffuse = diff * h.en.m2.rgb * h.en.m2.a * 10.0;
     vec3 result = vec3((1.0 - smoothstep(0.0, 300.0, h.d))) * (ambient + diffuse);
     gl_FragColor = vec4(result, 1.0); 
 }
