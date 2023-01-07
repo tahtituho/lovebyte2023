@@ -3,7 +3,7 @@ precision highp float;
 uniform int m;
 float time = float(m) / 44100.0;
 
-struct v3t {
+struct v3 {
     vec3 fr;
     vec3 sd;
 };
@@ -16,23 +16,16 @@ struct en {
     vec4 m2;
 };
 
-struct hit {
+struct ht {
     float d;
     en en;
 };
 vec2 uv;
 
-en opSmoothUnion(en m1, en m2, float k, float threshold) {
-    float a = clamp(0.5 + 0.5 * (m2.d - m1.d) / k, 0.0, 1.0);
-    float h = mix(m2.d, m1.d, a) - k * a * (1.0 - a);
-    if (smoothstep(m1.d, m2.d, h + threshold) > 0.5) {
-        m2.d = h;
-        return m2;
-    }
-    else {
-        m1.d = h;
+en opUnion(en m1, en m2) {
+    if (m1.d < m2.d)
         return m1;
-    }
+    return m2;
 }
 
 vec3 rot(vec3 zp, vec3 a) {
@@ -58,8 +51,8 @@ vec3 rot(vec3 zp, vec3 a) {
     );
 }
 
-v3t repeat(vec3 p, vec3 size) {
-    return v3t(mod(p + size * 0.5, size) - size * 0.5, floor((p + size * 0.5) / size));
+v3 repeat(vec3 p, vec3 size) {
+    return v3(mod(p + size * 0.5, size) - size * 0.5, floor((p + size * 0.5) / size));
 }
 
 en mBox(vec3 path, vec3 size, vec4 m1, vec4 m2) {
@@ -73,12 +66,12 @@ en mBox(vec3 path, vec3 size, vec4 m1, vec4 m2) {
 
 en scene(vec3 path) {    
     float time3 = time / 2.0;
-    v3t boxR = repeat(rot(path, vec3(0.0, time3, 3.2)), vec3(3.5, 0.0, 3.5));
     float time2 = time * 10.0;
+    v3 boxR = repeat(rot(path, vec3(0.0, time3, 3.2)), vec3(3.5, 0.0, 3.5));
     
-    float d = sin((boxR.sd.x + time2) / 10.0) * cos((boxR.sd.z + time2) / 5.0);
+    float d = sin((boxR.sd.x + time2) / 10.0) * sin((boxR.sd.z + time2) / 5.0);
     en waves = mBox(
-        rot(boxR.fr + (vec3(0.0, (sin(time) * 10.0) + d * 10.0 + 25.0, 0.0) * -1.0), vec3((sin(time) * 4.0) * d)),
+        rot(boxR.fr - vec3(0.0, (sin(time) * 10.0) + d * 10.0 + 25.0, 0.0), vec3(sin(time) * 4.0) * d),
         vec3(1.0),
         vec4(0.01, 0.0, 0.17, 0.25),
         vec4(0.95, 0.73, 0.77, 0.05)
@@ -89,30 +82,25 @@ en scene(vec3 path) {
         rot(boxR.fr, vec3(boxR.sd) + time) + length(sin((uv.xy + time) * 13.0)),
         vec3(10.0),
         vec4(abs(boxR.sd.xyz), 0.05),
-        vec4(vec3(1.0), 0.05)
+        vec4(vec3(1.0), 0.1)
     );
-    return opSmoothUnion(waves, cubes, 10.0, 0.0);
+    return opUnion(waves, cubes);
 } 
 
-vec3 calculatePointNormals(vec3 p)
-{
-    vec2 h = vec2(0.0001, 0);
-    return normalize(
-        vec3(scene(p + h.xyy).d - scene(p - h.xyy).d,
-             scene(p + h.yxy).d - scene(p - h.yxy).d,
-             scene(p + h.yyx).d - scene(p - h.yyx).d
-    ));
-}
-
-hit raymarch(vec3 rayDirection) {
-    hit h;
+ht raymarch(vec3 rd) {
+    ht h;
     for(int i = 0; i <= 64; i++) {
-        vec3 point = vec3(0.0, 30.0, 50.0) + rayDirection * h.d;
-        h.en = scene(point);
+        vec3 p = vec3(0.0, 30.0, 50.0) + rd * h.d;
+        h.en = scene(p);
         h.d += h.en.d;
 
         if(abs(h.en.d) < 0.001) {
-            h.en.n = calculatePointNormals(point);
+            vec2 h2 = vec2(0.0001, 0);
+            h.en.n = normalize(
+                vec3(scene(p + h2.xyy).d - scene(p - h2.xyy).d,
+                     scene(p + h2.yxy).d - scene(p - h2.yxy).d,
+                     scene(p + h2.yyx).d - scene(p - h2.yyx).d
+            ));
             break;
         } 
     }
@@ -123,6 +111,6 @@ void main() {
     vec2 resolution = vec2(1280, 720);
     uv = (gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0;
     uv.x *= resolution.x / resolution.y;
-    hit h = raymarch(normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + 0.75 * uv.y * vec3(0.0, 0.8575, -0.5145)));
+    ht h = raymarch(normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + 0.75 * uv.y * vec3(0.0, 0.8575, -0.5145)));
     gl_FragColor = vec4(vec3((1.0 - smoothstep(0.0, 300.0, h.d))) * (h.en.m1.rgb * h.en.m1.a * 10.0 + max(dot(h.en.n, normalize(vec3(0.0, 100.0, 10.0) - h.en.po)), 0.0) * h.en.m2.rgb * h.en.m2.a * 10.0), 1.0); 
 }
