@@ -77,7 +77,7 @@ en scene(vec3 path) {
     float time2 = time * 10.0;
     
     float d = sin((boxR.sd.x + time2) / 10.0) * cos((boxR.sd.z + time2) / 5.0);
-    en boxes = mBox(
+    en waves = mBox(
         rot(boxR.fr + (vec3(0.0, (sin(time) * 10.0) + d * 10.0 + 25.0, 0.0) * -1.0), vec3((sin(time) * 4.0) * d)),
         vec3(1.0),
         vec4(0.01, 0.0, 0.17, 0.25),
@@ -85,23 +85,23 @@ en scene(vec3 path) {
     );
 
     boxR = repeat(rot(path, vec3(time3, time, -time)), vec3(75.0));
-    en buildings = mBox(
+    en cubes = mBox(
         rot(boxR.fr, vec3(boxR.sd) + time) + length(sin((uv.xy + time) * 13.0)),
         vec3(10.0),
         vec4(abs(boxR.sd.xyz), 0.05),
         vec4(vec3(1.0), 0.05)
     );
-    return opSmoothUnion(boxes, buildings, 10.0, 0.0);
+    return opSmoothUnion(waves, cubes, 10.0, 0.0);
 } 
 
-vec3 calculatePointNormals(vec3 point) {
-    vec3 k = vec3(1, -1, 0.001);
+vec3 calculatePointNormals(vec3 p)
+{
+    vec2 h = vec2(0.0001, 0);
     return normalize(
-        k.xyy * scene(point + k.xyy * k.z).d + 
-        k.yyx * scene(point + k.yyx * k.z).d + 
-        k.yxy * scene(point + k.yxy * k.z).d + 
-        k.xxx * scene(point + k.xxx * k.z).d
-    );
+        vec3(scene(p + h.xyy).d - scene(p - h.xyy).d,
+             scene(p + h.yxy).d - scene(p - h.yxy).d,
+             scene(p + h.yyx).d - scene(p - h.yyx).d
+    ));
 }
 
 hit raymarch(vec3 rayDirection) {
@@ -124,9 +124,5 @@ void main() {
     uv = (gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0;
     uv.x *= resolution.x / resolution.y;
     hit h = raymarch(normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + 0.75 * uv.y * vec3(0.0, 0.8575, -0.5145)));
-    vec3 ambient = h.en.m1.rgb * h.en.m1.a * 10.0;
-    float diff = max(dot(h.en.n, normalize(vec3(0.0, 100.0, 10.0) - h.en.po)), 0.0);
-    vec3 diffuse = diff * h.en.m2.rgb * h.en.m2.a * 10.0;
-    vec3 result = vec3((1.0 - smoothstep(0.0, 300.0, h.d))) * (ambient + diffuse);
-    gl_FragColor = vec4(result, 1.0); 
+    gl_FragColor = vec4(vec3((1.0 - smoothstep(0.0, 300.0, h.d))) * (h.en.m1.rgb * h.en.m1.a * 10.0 + max(dot(h.en.n, normalize(vec3(0.0, 100.0, 10.0) - h.en.po)), 0.0) * h.en.m2.rgb * h.en.m2.a * 10.0), 1.0); 
 }
