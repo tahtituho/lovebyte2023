@@ -19,16 +19,16 @@ function draw(time) {
     g.vertexAttribPointer(0, 2, g.FLOAT, false, 0, 0);
     g.enableVertexAttribArray(0);
   
-    g.uniform1f(g.getUniformLocation(program, "v"), time / 1000);
+    g.uniform1f(g.getUniformLocation(p, "v"), time / 1000);
     g.drawArrays(g.TRIANGLE_STRIP, 0, 4);
     requestAnimationFrame(draw);
 };
 
-V.onclick = () => {
+V.onclick = _ => {
     var audioContext = new AudioContext();
-    var soundBuffer = audioContext.createBuffer(1, 22050 * 60, 44000);
+    var soundBuffer = audioContext.createBuffer(1, q = 22050 * 30, 44000);
 
-    for (let t = 0; t < soundBuffer.length; t++) {
+    for (t = 0; t < q; t++) {
         //This tune is ripped from https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.htm
         //ryg 2011-10-10 (44k)
         //Write here tune
@@ -51,12 +51,10 @@ V.onclick = () => {
     g.bindBuffer(ab, g.createBuffer());
     g.bufferData(ab, new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]), g.STATIC_DRAW);
 
-    program = g.createProgram();
+    g.attachShader(p = g.createProgram(), createShader(vertexShader, g.VERTEX_SHADER));
+    g.attachShader(p, createShader(fragmentShader, g.FRAGMENT_SHADER));
 
-    g.attachShader(program, createShader(vertexShader, g.VERTEX_SHADER));
-    g.attachShader(program, createShader(fragmentShader, g.FRAGMENT_SHADER));
-
-    g.linkProgram(program);
-    g.useProgram(program);
+    g.linkProgram(p);
+    g.useProgram(p);
     requestAnimationFrame(draw);
 };
