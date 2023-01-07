@@ -1,8 +1,8 @@
-c3d = document.body.appendChild(document.createElement("canvas"));
-c3d.width = 640;
-c3d.height = 360;
+c = document.body.appendChild(document.createElement("canvas"));
+c.width = 640;
+c.height = 360;
 
-gl = c3d.getContext("webgl");
+gl = c.getContext("webgl");
 var vertexShader = `attribute vec3 position;void main(){gl_Position = vec4(position, 1.0);}`;
 //Remember to change time to be uniform float v and resolution to 640x360
 //First two lines should be like precision highp float;uniform float v;
@@ -43,13 +43,12 @@ V.onclick = () => {
     soundSource.connect(audioContext.destination);
     soundSource.start();
 
-    c3d.requestFullscreen();
-    c3d.style.cursor = 'none';
-    c3d.onclick = null;
+    c.requestFullscreen();
+    c.style.cursor = 'none';
+    c.onclick = null;
 
-    var buffer = gl.createBuffer();
     var ab = gl.ARRAY_BUFFER;
-    gl.bindBuffer(ab, buffer);
+    gl.bindBuffer(ab, gl.createBuffer());
     gl.bufferData(ab, new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]), gl.STATIC_DRAW);
 
     program = gl.createProgram();
@@ -59,6 +58,5 @@ V.onclick = () => {
 
     gl.linkProgram(program);
     gl.useProgram(program);
-    gl.bindBuffer(ab, buffer);
     window.requestAnimationFrame(draw);
 };
