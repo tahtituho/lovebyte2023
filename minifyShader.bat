@@ -1,1 +1,1 @@
-tools\shader_minifier.exe -o release/minifiedShader.js --format js --preserve-externals .\tools\src\shaders\fragment.frag
+tools\shader_minifier.exe -o release/minifiedShader.js --format text .\tools\src\shaders\fragment.frag

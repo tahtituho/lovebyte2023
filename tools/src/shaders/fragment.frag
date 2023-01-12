@@ -1,12 +1,7 @@
 
 precision highp float;
 uniform int m;
-float time = float(m) / 44100.0;
-
-struct v3 {
-    vec3 fr;
-    vec3 sd;
-};
+float t = float(m) / 44100.0;
 
 struct en {
     float d;
@@ -40,16 +35,16 @@ vec3 rot(vec3 zp, vec3 a) {
     );
 }
 
-v3 repeat(vec3 p, vec3 size) {
-    return v3(mod(p + size * 0.5, size) - size * 0.5, floor((p + size * 0.5) / size));
-}
-
 en scene(vec3 path) {    
-    v3 boxR = repeat(rot(path, vec3(time / 2.0, time, -time)), vec3(75.0));
+    vec3 size = vec3(75.0);
+    vec3 pathR = rot(path, vec3(t / 2.0, t, -t));
+    vec3 boxR = mod(pathR + size * 0.5, size) - size * 0.5;
+    vec3 boxO = floor((pathR + size * 0.5) / size);
     en cubes;
-    vec3 d = abs(rot(boxR.fr, vec3(boxR.sd) + time * 2.0) + length(sin((uv.xy + time) * 13.0))) - vec3(10.0);
+   
+    vec3 d = abs(rot(boxR, vec3(boxO) + t * 2.0) + length(sin((uv.xy + t) * 13.0))) - vec3(10.0);
     cubes.d = (min(max(d.x, max(d.y, d.z)), 0.0) + length(max(d, 0.0)) - 0.3);
-    cubes.m = abs(boxR.sd);
+    cubes.m = abs(boxO);
     return cubes;
 } 
 
@@ -61,11 +56,11 @@ ht raymarch(vec3 rd) {
         h.d += h.e.d;
 
         if(abs(h.e.d) < 0.001) {
-            vec2 h2 = vec2(0.0001, 0);
+            vec2 e = vec2(0.0001, 0);
             h.e.n = normalize(
-                vec3(scene(p + h2.xyy).d - scene(p - h2.xyy).d,
-                     scene(p + h2.yxy).d - scene(p - h2.yxy).d,
-                     scene(p + h2.yyx).d - scene(p - h2.yyx).d
+                vec3(scene(p + e.xyy).d - h.e.d,
+                     scene(p + e.yxy).d - h.e.d,
+                     scene(p + e.yyx).d - h.e.d
             ));
             break;
         } 
