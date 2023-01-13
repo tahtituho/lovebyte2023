@@ -37,9 +37,12 @@ float scene(vec3 path) {
     return (min(max(d2.x, max(d2.y, d2.z)), 0.0) + length(max(d2, 0.0)) - 0.3);
 } 
 
-void raymarch(vec3 rd) {
-    for(int i = 0; i <= 64; i++) {
-        vec3 p = vec3(0.0, 30.0, 50.0) + rd * d;
+void main() {
+    vec2 resolution = vec2(1280, 720);
+    uv = (gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0;
+    uv.x *= resolution.x / resolution.y;
+        for(int i = 0; i <= 64; i++) {
+        vec3 p = vec3(0.0, 30.0, 50.0) + normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + uv.y * vec3(0.0, 0.6443, -0.3859)) * d;
         float k = scene(p);
         d += k;
         if(k < 0.001) {
@@ -52,13 +55,5 @@ void raymarch(vec3 rd) {
             break;
         } 
     }
-    return;
-}
-
-void main() {
-    vec2 resolution = vec2(1280, 720);
-    uv = (gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0;
-    uv.x *= resolution.x / resolution.y;
-    raymarch(normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + 0.75 * uv.y * vec3(0.0, 0.8575, -0.5145)));
     gl_FragColor = vec4(vec3((1.0 - smoothstep(0.0, 300.0, d))) * (mt * 0.5 + max(dot(n, vec3(0.0, 1.0, 0.1)), 0.0)), 1.0); 
 }

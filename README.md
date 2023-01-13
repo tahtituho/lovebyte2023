@@ -8,5 +8,6 @@
 1. Start http server: python -m http.server 
 1. Put minifed shader code to sourceDev.js file into fragmentShader variable.
 1. Point browser to http://localhost:8000/index.html
-1. When you feel that everything is working paste sourceDev.js to https://try.terser.org/ and copy output to source.js
+1. When you feel that everything is working paste sourceDev.js to https://xem.github.io/terser-online/ and copy output to source.js
+    1. Also might be good idea to try different minifications: https://js1024.fun/ 
 1. Run minifyCode.bat and try results at http://localhost:8000/release/index.html
