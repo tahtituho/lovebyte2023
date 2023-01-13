@@ -34,8 +34,8 @@ float scene(vec3 path) {
     vec3 boxO = floor((pathR + size * 0.5) / size);
     vec3 d2 = abs(rot(boxR, vec3(boxO) + t * 2.0) + length(sin((uv.xy + t) * 13.0))) - vec3(10.0);
     mt = abs(boxO);
-    return (min(max(d2.x, max(d2.y, d2.z)), 0.0) + length(max(d2, 0.0)) - 0.3);
-} 
+    return (min(max(d2.x, max(d2.y, d2.z)), 0.0) + length(max(d2, 0.0)) - 2.0);
+}
 
 void main() {
     vec2 resolution = vec2(1280, 720);
@@ -55,5 +55,5 @@ void main() {
             break;
         } 
     }
-    gl_FragColor = vec4(vec3((1.0 - smoothstep(0.0, 300.0, d))) * (mt * 0.5 + max(dot(n, vec3(0.0, 1.0, 0.1)), 0.0)), 1.0); 
+    gl_FragColor = vec4(vec3(smoothstep(300.0, 0.0, d)) * (mt * 0.5 + max(dot(n, vec3(0.0, 1.0, 0.1)), 0.0)), 1.0); 
 }
