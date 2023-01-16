@@ -1,5 +1,5 @@
 
-precision highp float;
+precision lowp float;
 uniform int m;
 float t = float(m) / 44100.0;
 
