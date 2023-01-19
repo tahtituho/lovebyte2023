@@ -1,1 +1,1 @@
-tools\jsexe.exe -cb source.js release\index.html
+node .\compeko.js .\source.js .\release\index.html

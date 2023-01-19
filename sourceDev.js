@@ -25,7 +25,7 @@ var draw = () => {
     f(draw);
 }
 
-V.onclick = _ => {
+c.onclick = _ => {
     var soundBuffer = a.createBuffer(1, q = 22050 * 30, 44000);
 
     for (t = 0; t < q; t++) {
