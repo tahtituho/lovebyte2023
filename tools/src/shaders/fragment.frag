@@ -32,7 +32,7 @@ float scene(vec3 path) {
     path = rot(path, vec3(t / 2.0, t, -t));
     vec3 boxO = floor((path + size * 0.5) / size);
     vec3 d2 = abs(rot(mod(path + size * 0.5, size) - size * 0.5, vec3(boxO) + t * 2.0) + length(sin((uv.xy + t) * 13.0))) - vec3(10.0);
-    mt = abs(boxO);
+    mt = abs(boxO + sin(t));
     return (min(max(d2.x, max(d2.y, d2.z)), 0.0) + length(max(d2, 0.0)) - 2.0);
 }
 
@@ -41,7 +41,7 @@ void main() {
     uv = (gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0;
     uv.x *= resolution.x / resolution.y;
     for(int i = 0; i <= 64; i++) {
-        vec3 p = vec3(25.0, 30.0, 0.0) + normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + uv.y * vec3(0.0, 0.6443, -0.3859)) * d;
+        vec3 p = vec3(25.0, 30.0, t * 3.0) + normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + uv.y * vec3(0.0, 0.6443, -0.3859)) * d;
         float k = scene(p);
         d += k;
         vec2 e = vec2(0.001, 0);
