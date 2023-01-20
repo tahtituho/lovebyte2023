@@ -31,9 +31,9 @@ float scene(vec3 path) {
     vec3 size = vec3(75.0);
     path = rot(path, vec3(t / 2.0, t, -t));
     vec3 boxO = floor((path + size * 0.5) / size);
-    vec3 d2 = abs(rot(mod(path + size * 0.5, size) - size * 0.5, vec3(boxO) + t * 2.0) + length(sin((uv.xy + t) * 13.0))) - vec3(10.0);
     mt = abs(boxO + sin(t));
-    return (min(max(d2.x, max(d2.y, d2.z)), 0.0) + length(max(d2, 0.0)) - 2.0);
+    boxO = abs(rot(mod(path + size * 0.5, size) - size * 0.5, vec3(boxO) + t * 2.0) + length(sin((uv.xy + t) * 13.0))) - vec3(10.0);
+    return (min(max(boxO.x, max(boxO.y, boxO.z)), 0.0) + length(max(boxO, 0.0)) - 2.0);
 }
 
 void main() {
@@ -45,14 +45,11 @@ void main() {
         float k = scene(p);
         d += k;
         vec2 e = vec2(0.001, 0);
-        if(k < e.x) {
-            n = normalize(
-                vec3(scene(p + e.xyy) - k,
-                     scene(p + e.yxy) - k,
-                     scene(p + e.yyx) - k
-            ));
-            break;
-        } 
+        n = normalize(
+            vec3(scene(p + e.xyy) - k,
+                 scene(p + e.yxy) - k,
+                 scene(p + e.yyx) - k
+        ));
     }
     gl_FragColor = vec4(vec3(smoothstep(300.0, 0.0, d)) * (mt + max(dot(n, vec3(0.0, 1.0, 0.1)), 0.0)), 1.0); 
 }
