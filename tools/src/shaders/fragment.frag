@@ -15,15 +15,10 @@ vec3 rot(vec3 zp, vec3 a) {
         ac.z*zp.x-as.z*zp.y,
         as.z*zp.x+ac.z*zp.y,
         zp.z);
-    zp = vec3(
+    return vec3(
         ac.y*zp.x+as.y*zp.z,
         zp.y,
         -as.y*zp.x+ac.y*zp.z
-    );
-    return vec3(
-        zp.x,
-        ac.x*zp.y-as.x*zp.z,
-        as.x*zp.y+ac.x*zp.z
     );
 }
 
@@ -40,7 +35,7 @@ void main() {
     uv = (gl_FragCoord.xy / resolution.xy) * 2.0 - 1.0;
     uv.x *= resolution.x / resolution.y;
     for(int i = 0; i <= 64; i++) {
-        n = vec3(25.0,  t * 8.0, t * 3.0) + normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + uv.y * vec3(0.0, 0.6443, -0.3859)) * d;
+        n = vec3(25.0, 9.0, t * 3.0) + normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + uv.y * vec3(0.0, 0.6443, -0.3859)) * d;
         float k = scene(n);
         d += k;
         vec2 e = vec2(0.001, 0);
