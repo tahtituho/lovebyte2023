@@ -16,11 +16,8 @@ function createShader(src, type) {
 }
 
 function draw() {  
-    g.vertexAttribPointer(0, 2, 5126, false, 0, 0);
-    g.enableVertexAttribArray(0);
-  
     g.uniform1f(g.getUniformLocation(p, "y"), a.currentTime);
-    g.drawArrays(5, 0, 4);
+    g.drawArrays(0, 0, 1);
     f(draw);
 }
 
@@ -45,13 +42,14 @@ c.onclick = _ => {
     c.requestFullscreen();
     c.style.cursor = 'none';
 
-    g.bindBuffer(j = 34962, g.createBuffer());
-    g.bufferData(j, new Float32Array([1, 1, -1, 1, 1, -1, -1, -1]), 35044);
-
-    g.attachShader(p = g.createProgram(), createShader(`attribute vec3 p;void main(){gl_Position=vec4(p,1.);}`, 35633));
+    g.attachShader(p = g.createProgram(), createShader(`void main(){gl_Position=vec4(0.,0.,0.,1.);gl_PointSize = 700.;}`, 35633));
     g.attachShader(p, createShader(fragmentShader, 35632));
 
     g.linkProgram(p);
     g.useProgram(p);
+
+    g.enableVertexAttribArray(0);
+    g.bindBuffer(34962, g.createBuffer());
+    g.vertexAttribPointer(0, 1, 5126, false, 0, 0);
     f(draw);
 }
