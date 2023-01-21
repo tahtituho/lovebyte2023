@@ -5,15 +5,13 @@ c.height = 360;
 g = c.getContext("webgl");
 //Remember to change time to be uniform float y and resolution to 640x360
 //First two lines should be like precision lowp float;uniform float y;float x;
-var fragmentShader = `precision lowp float;uniform float y;float x,z;vec3 f;vec2 r,c=vec2(640,360);vec3 s(vec3 v,vec3 y){vec3 r=sin(y),f=cos(y);v=vec3(f.z*v.x-r.z*v.y,r.z*v.x+f.z*v.y,v.z);return vec3(f.y*v.x+r.y*v.z,v.y,-r.y*v.x+f.y*v.z);}float s(vec3 v){return v+=sin(s(v,vec3(y))*2.)*.08,v=s(v,vec3(-y)),z=length(tan(v*20.)/4.),abs(dot(sin(v),cos(v.zxy))-2.8)-1.8;}void main(){r=gl_FragCoord.xy/c.xy*2.-1.;r.x*=c.x/c.y;for(int v=0;v<=64;v++){f=vec3(y/6.2)+normalize(vec3(0.,-.5145,-.8575)+r.x*vec3(-.75,0.,0.)+r.y*vec3(0.,.6443,-.3859))*x;float l=s(f);x+=l;vec2 n=vec2(.1,0.);f=normalize(vec3(s(f+n.xyy)-l,s(f+n.yxy)-l,s(f+n.yyx)-l));}gl_FragColor=vec4(z*f*max(dot(f,vec3(0.,1.,1.)),0.)*vec3(step(-20.,-x)),1.);}`;
+var fragmentShader = `precision lowp float;uniform float y;float x,z,c;vec3 i,n,d;vec2 f,t;vec3 s(vec3 v,vec3 i){return n=sin(i),d=cos(i),v=vec3(d.z*v.x-n.z*v.y,n.z*v.x+d.z*v.y,v.z),vec3(d.y*v.x+n.y*v.z,v.y,-n.y*v.x+d.y*v.z);}float s(vec3 v){return v=s(v,vec3(-y)),v+=sin(s(v,vec3(y))*2.)*.1,z=length(tan(v*20.)),abs(dot(sin(v),cos(v.zxy))-2.8)-1.8;}void main(){vec2 v=vec2(640,360);f=gl_FragCoord.xy/v.xy*2.-1.;f.x*=v.x/v.y;for(int n=0;n<=64;n++)i=vec3(y/6.2)+normalize(vec3(0.,-.5145,-.8575)+f.x*vec3(-.75,0.,0.)+f.y*vec3(0.,.6443,-.3859))*x,c=s(i),x+=c,t=vec2(.1,0.),i=normalize(vec3(s(i+t.xyy)-c,s(i+t.yxy)-c,s(i+t.yyx)-c));gl_FragColor=vec4(z*i*max(dot(i,vec3(0.,1.,.5)),0.)*vec3(step(x,20.)),1.);}`;
 
 a = new AudioContext();
 f = requestAnimationFrame;
-function createShader(src, type) {
-    var shader = g.createShader(type);
+function createShader(src, type, shader = g.createShader(type)) {
     g.shaderSource(shader, src);
     g.compileShader(shader);
-    //console.log(g.getShaderInfoLog(shader));
     return shader;
 }
 
