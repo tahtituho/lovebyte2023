@@ -15,16 +15,11 @@ vec3 rot(vec3 zp, vec3 a) {
         ac.z*zp.x-as.z*zp.y,
         as.z*zp.x+ac.z*zp.y,
         zp.z);
-    zp = vec3(
+    return vec3(
         ac.y*zp.x+as.y*zp.z,
         zp.y,
         -as.y*zp.x+ac.y*zp.z
     );
-    return vec3(
-        zp.x,
-        ac.x*zp.y-as.x*zp.z,
-        as.x*zp.y+ac.x*zp.z
-    );;
 }
 
 float scene(vec3 path) {    
@@ -50,5 +45,5 @@ void main() {
        
     }
 
-    gl_FragColor = vec4(vec3(smoothstep(25.0, 0.0, d)) * (mt * n * max(dot(n, vec3(0.0, 1.0, 1.0)), 0.0)), 1.0); 
+    gl_FragColor = vec4(vec3(step(-20.0, -d)) * (mt * n * max(dot(n, vec3(0.0, 1.0, 1.0)), 0.0)), 1.0); 
 }
