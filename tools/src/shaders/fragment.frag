@@ -13,6 +13,7 @@ vec3 ac;
 
 vec2 uv;
 vec2 e;
+vec2 resolution = vec2(1280, 720);
 vec3 rot(vec3 zp, vec3 a) {
     as = sin(a);
     ac = cos(a);
@@ -35,7 +36,6 @@ float scene(vec3 path) {
 }
 
 void main() {
-    vec2 resolution = vec2(1280, 720);
     uv = gl_FragCoord.xy / resolution.xy * 2.0 - 1.0;
     uv.x *= resolution.x / resolution.y;
     for(int i = 0; i <= 64; i++) {
