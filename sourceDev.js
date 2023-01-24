@@ -38,7 +38,7 @@ c.onclick = _ => {
     k.start();
 
     c.requestFullscreen();
-    g.attachShader(p = g.createProgram(), createShader(`void main(){gl_Position=vec4(0.,0.,0.,1.);gl_PointSize=700.;}`, 35633));
+    g.attachShader(p = g.createProgram(), createShader(`void main(){gl_Position=vec4(0.,0.,0.,1.);gl_PointSize=640.;}`, 35633));
     g.attachShader(p, createShader(fragmentShader, 35632));
 
     g.linkProgram(p);
