@@ -32,7 +32,7 @@ float scene(vec3 path) {
     path = rot(path, vec3(-t));
     path += sin(rot(path, vec3(t)) * 2.0) * 0.1;
     mt = length(tan(path * 20.0));
-    return abs(dot(sin(path), cos(path.zxy)) - 2.8) - 1.8;
+    return abs(dot(sin(path), cos(path.zxy)) - 3.0) - 2.0;
 }
 
 void main() {
