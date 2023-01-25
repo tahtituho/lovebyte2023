@@ -24,13 +24,11 @@ function draw() {
 
 c.onclick = _ => {
     k = a.createBufferSource();
-    k.buffer = a.createBuffer(1, q = 22050 * 120, 44000)
+    k.buffer = a.createBuffer(1, q = 22050 * 120, 8000)
     for (t = 0; t < q; t++) {
-        //This tune is ripped from https://greggman.com/downloads/examples/html5bytebeat/html5bytebeat.htm
-        //ryg 2011-10-10 (44k)
         //Write here tune
         k.buffer.getChannelData(0)[t] = (
-            ((t*("36364689"[t>>13&7]&15))/12&128)+(((((t>>12)^(t>>12)-2)%11*t)/4|t>>13)&127)
+            ((t^(2*t>>3))-(t*("123436"[t>>11&5]&3)))+((t&255&t>>6)+(t&64&t>>8)) 
         & 255) / 127 - 1;
     }
 
