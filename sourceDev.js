@@ -5,7 +5,7 @@ c.height = 360;
 g = c.getContext("webgl");
 //Remember to change time to be uniform float y and resolution to 640x360
 //First two lines should be like precision lowp float;uniform float y;float x;
-var fragmentShader = `precision lowp float;uniform float y;float x,z,c;vec3 i,n,s;vec2 r,a,d=vec2(640,360);vec3 t(vec3 v,vec3 i){return n=sin(i),s=cos(i),v=vec3(s.z*v.x-n.z*v.y,n.z*v.x+s.z*v.y,v.z),vec3(s.y*v.x+n.y*v.z,v.y,-n.y*v.x+s.y*v.z);}float t(vec3 v){return v=t(v,vec3(-y))+sin(t(v,vec3(y))*2.)*.1,z=length(tan(v*20.)),abs(dot(sin(v),cos(v.zxy))-3.)-2.;}void main(){r=gl_FragCoord.xy/d.xy;for(int v=0;v<=64;v++)i=vec3(y/6.2)+normalize(vec3(0.,-.5145,-.8575)+r.x*vec3(-.75,0.,0.)+r.y*vec3(0.,.6443,-.3859))*x,c=t(i),x+=c,a=vec2(.1,0.),i=normalize(vec3(t(i+a.xyy)-c,t(i+a.yxy)-c,t(i+a.yyx)-c));gl_FragColor=vec4(z*i*max(dot(i,vec3(0.,1.,.5)),0.)*vec3(step(x,20.)),1.);}`;
+var fragmentShader = `precision lowp float;uniform float y;float x,z,c;vec3 i,n,s;vec2 r,a,l=vec2(640,360);vec3 t(vec3 v,vec3 i){return n=sin(i),s=cos(i),v=vec3(s.z*v.x-n.z*v.y,n.z*v.x+s.z*v.y,v.z),vec3(s.y*v.x+n.y*v.z,v.y,-n.y*v.x+s.y*v.z);}float t(vec3 v){return v=t(v,vec3(-y))+sin(t(v,vec3(y))*2.)*.15,z=length(tan(v*20.)),abs(dot(sin(v),cos(v.zxy))-3.)-2.;}void main(){r=gl_FragCoord.xy/l.xy*2.-1.;r.x*=l.x/l.y;for(int v=0;v<=64;v++)i=vec3(y/6.2)+normalize(vec3(0.,-.5145,-.8575)+r.x*vec3(-.75,0.,0.)+r.y*vec3(0.,.6443,-.3859))*x,c=t(i),x+=c,a=vec2(.15,0.),i=normalize(vec3(t(i+a.xyy)-c,t(i+a.yxy)-c,t(i+a.yyx)-c));gl_FragColor=vec4(z*i*max(dot(i,vec3(0.,1.,.5)),0.)*vec3(step(x,20.)),1.);}`;
 
 a = new AudioContext();
 f = requestAnimationFrame;
@@ -42,7 +42,6 @@ c.onclick = _ => {
     g.linkProgram(p);
     g.useProgram(p);
 
-    g.enableVertexAttribArray(0);
     g.bindBuffer(34962, g.createBuffer());
     g.vertexAttribPointer(0, 1, 5126, false, 0, 0);
     f(draw);

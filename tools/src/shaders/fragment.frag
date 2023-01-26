@@ -29,18 +29,19 @@ vec3 rot(vec3 zp, vec3 a) {
 }
 
 float scene(vec3 path) {    
-    path = rot(path, vec3(-t)) + sin(rot(path, vec3(t)) * 2.0) * 0.1;
+    path = rot(path, vec3(-t)) + sin(rot(path, vec3(t)) * 2.0) * 0.15;
     mt = length(tan(path * 20.0));
     return abs(dot(sin(path), cos(path.zxy)) - 3.0) - 2.0;
 }
 
 void main() {
-    uv = gl_FragCoord.xy / resolution.xy;
+    uv = gl_FragCoord.xy / resolution.xy * 2.0 - 1.0;
+    uv.x *= resolution.x / resolution.y;
     for(int i = 0; i <= 64; i++) {
         n = vec3(t / 6.2) + normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + uv.y * vec3(0.0, 0.6443, -0.3859)) * d;
         k = scene(n);
         d += k;
-        e = vec2(0.1, 0.0);
+        e = vec2(0.15, 0.0);
         n = normalize(
             vec3(scene(n + e.xyy) - k,
                  scene(n + e.yxy) - k,
