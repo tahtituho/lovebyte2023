@@ -13,26 +13,26 @@ var fragmentShader = `precision lowp float;uniform float y;float x,z,c;vec3 i,n,
 
 a = new AudioContext();
 for (i in a) {
-    a[i[0] + i[6]] = a[i];
+    a[i[6]] = a[i];
 }
 
 f = requestAnimationFrame;
 
-function createShader(src, type, shader = g.createShader(type)) {
+function createShader(src, type, shader = g.cS(type)) {
     g.sS(shader, src);
     g.compileShader(shader);
     return shader;
 }
 
 function draw() {  
-    //uniform3f(location, v0, v1, v2)
     g.uniform1f(g.gf(p, "y"), a.currentTime / 2);
-    g.dr(5, 0, 4);
+    g.dr(6, 0, 3);
     f(draw);
 }
 
 c.onclick = _ => {
-    k = a.cB();
+    c.requestFullscreen();
+    k = a.B();
     k.buffer = a.createBuffer(1, q = 4000 * 120, 8000)
     for (t = 0; t < q; t++) {
         //Write here tune
@@ -40,17 +40,16 @@ c.onclick = _ => {
             ((t^(2*t>>3))-(t*("123436"[t>>11&5]&3)))+((t&255&t>>6)+(t&64&t>>8)) 
         & 255) / 127 - 1;
     }
-    k.connect(a.da);
+    k.connect(a.a);
     k.start();
 
-    c.requestFullscreen();
 
     g.aS(p = g.cP(), createShader(`attribute vec4 p;void main(){gl_Position=p;}`, 35633));
     g.aS(p, createShader(fragmentShader, 35632));
 
     g.lo(p);
 
-    g.vA(g.ug(p), 2, 5120, g.bf(g.ET - 3, g.cB()), 1, g.bD(g.ET - 3, new Int8Array(m = [1, -3, 1, 1]), g.ET + 79));
+    g.vA(g.ug(p), 2, 5120, g.bf(34962, g.cB()), 1, g.bD(34962, new Int8Array(m = [1, -3, 1, 1]), 35044));
     g.eV(0);
     f(draw);
 }
