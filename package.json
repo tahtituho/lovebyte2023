@@ -1,6 +1,8 @@
 {
+  "type": "module",
   "dependencies": {
     "http-server": "^14.1.1",
-    "node-zopfli": "^2.1.4"
+    "node-zopfli": "^2.1.4",
+    "terser": "^5.16.1"
   }
 }
