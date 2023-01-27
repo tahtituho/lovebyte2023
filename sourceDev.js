@@ -1,4 +1,5 @@
-c = document.body.appendChild(document.createElement("canvas"));
+d = document;
+c = d.body.appendChild(d.createElement("canvas"));
 c.width = 1280;
 c.height = 720;
 
@@ -18,23 +19,23 @@ for (i in a) {
 
 f = requestAnimationFrame;
 
-function createShader(src, type, shader = g.cS(type)) {
+cs = (src, type, shader = g.cS(type)) => {
     g.sS(shader, src);
     g.compileShader(shader);
     return shader;
 }
 
-function draw() {  
+d = () => {  
     g.uniform1f(g.gf(p, "y"), a.currentTime / 2);
     g.dr(6, 0, 3);
-    f(draw);
+    f(d);
 }
 
 c.onclick = _ => {
     c.requestFullscreen();
     k = a.B();
     k.buffer = a.createBuffer(1, q = 4000 * 120, 8000)
-    for (t = 0; t < q; t++) {
+    for (t = q; t--;) {
         //Write here tune
         k.buffer.getChannelData(0)[t] = (
             ((t^(2*t>>3))-(t*("123436"[t>>11&5]&3)))+((t&255&t>>6)+(t&64&t>>8)) 
@@ -44,12 +45,12 @@ c.onclick = _ => {
     k.start();
 
 
-    g.aS(p = g.cP(), createShader(`attribute vec4 p;void main(){gl_Position=p;}`, 35633));
-    g.aS(p, createShader(fragmentShader, 35632));
+    g.aS(p = g.cP(), cs(`attribute vec4 p;void main(){gl_Position=p;}`, 35633));
+    g.aS(p, cs(fragmentShader, 35632));
 
     g.lo(p);
 
     g.vA(g.ug(p), 2, 5120, g.bf(34962, g.cB()), 1, g.bD(34962, new Int8Array(m = [1, -3, 1, 1]), 35044));
     g.eV(0);
-    f(draw);
+    f(d);
 }
