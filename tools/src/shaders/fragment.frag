@@ -35,8 +35,7 @@ float scene(vec3 path) {
 }
 
 void main() {
-    uv = gl_FragCoord.xy / resolution.xy * 2.0 - 1.0;
-    uv.x *= resolution.x / resolution.y;
+    uv = (2.0 * gl_FragCoord.xy - resolution) / resolution.y;
     for(int i = 0; i <= 64; i++) {
         n = vec3(t / 6.2) + normalize(vec3(0.0, -0.5145, -0.8575) + uv.x * vec3(-0.75, 0.0, 0.0) + uv.y * vec3(0.0, 0.6443, -0.3859)) * d;
         k = scene(n);
