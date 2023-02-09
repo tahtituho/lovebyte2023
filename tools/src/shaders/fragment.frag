@@ -30,7 +30,7 @@ vec3 rot(vec3 zp, vec3 a) {
 
 float scene(vec3 path) {    
     path = rot(path, vec3(-t)) + sin(rot(path, vec3(t)) * 2.0) * 0.15;
-    mt = length(tan(path * 20.0));
+    mt = length(tan(path * 20.0 + t * 20.0)) * smoothstep(22.5, 20.0, t);
     return abs(dot(sin(path), cos(path.zxy)) - 3.0) - 2.0;
 }
 
